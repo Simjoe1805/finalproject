@@ -561,6 +561,7 @@ function getStatusDetail(index) {
 
 function renderFlow() {
   flowShell.classList.toggle("completed", state.flowCompleted);
+  document.body.classList.toggle("flow-active", !state.flowCompleted);
   [...flowShell.querySelectorAll(".flow-layer")].forEach((layer) => {
     layer.classList.toggle("active", Number(layer.dataset.step) === state.flowStep);
   });

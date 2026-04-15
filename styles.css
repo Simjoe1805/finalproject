@@ -9,6 +9,9 @@
   --text: #111111;
   --text-muted: #6b6b6b;
   --text-inverse: #ffffff;
+  --accent: #F97316;
+  --accent-dim: rgba(249, 115, 22, 0.12);
+  --emergency: #DC2626;
   --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 16px;
@@ -29,7 +32,12 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.flow-active {
+  overflow: hidden;
 }
 
 button,
@@ -78,6 +86,9 @@ textarea {
   display: block;
   padding: 0;
   background: #050505;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .flow-shell.completed {
@@ -110,6 +121,9 @@ textarea {
 .flow-layer-hero {
   align-content: center;
   gap: 2rem;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(249, 115, 22, 0.12), transparent),
+    #050505;
 }
 
 .flow-layer > h2,
@@ -183,12 +197,13 @@ textarea {
   width: 6.5rem;
   height: 6.5rem;
   border-radius: 24px;
-  background: #ffffff;
-  color: #050505;
+  background: linear-gradient(135deg, #F97316, #EA580C);
+  color: #ffffff;
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   margin: 0 auto;
+  box-shadow: 0 0 40px rgba(249, 115, 22, 0.35);
 }
 
 .welcome-title {
@@ -317,6 +332,7 @@ textarea {
   background: #ffffff;
   color: #050505;
   border-color: #ffffff;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .layer-service-option.active .muted {
@@ -546,8 +562,6 @@ h3 {
 .ghost-button:hover,
 .location-pill:hover,
 .pill:hover,
-.emergency-chip:hover,
-.panic-fab:hover,
 .category-button:hover,
 .favorite-button:hover,
 .method:hover,
@@ -555,6 +569,13 @@ h3 {
 .star:hover {
   background: var(--surface-muted);
   color: var(--text);
+}
+
+.emergency-chip:hover,
+.panic-fab:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
 }
 
 .primary-button:hover {
@@ -584,7 +605,8 @@ h3 {
   inset: 0;
   background:
     radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.06), transparent 16%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05), transparent 18%);
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.04), transparent 55%);
 }
 
 .map-glow {
@@ -775,9 +797,9 @@ h3 {
 .emergency-chip,
 .panic-fab {
   border-radius: 999px;
-  background: #111111;
+  background: var(--emergency);
   color: #ffffff;
-  border: 1px solid #111111;
+  border: 1px solid var(--emergency);
 }
 
 .emergency-chip {
@@ -791,6 +813,7 @@ h3 {
   bottom: 1.5rem;
   padding: 1rem 1.35rem;
   z-index: 10;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
 }
 
 .bottom-sheet {
@@ -850,6 +873,7 @@ h3 {
   background: #111111;
   color: #ffffff;
   border-color: #111111;
+  box-shadow: inset 0 -3px 0 var(--accent);
 }
 
 .sheet-tab:disabled {
@@ -966,6 +990,7 @@ h3 {
   background: #111111;
   color: #ffffff;
   border-color: #111111;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .category-button.active .muted {
@@ -1101,7 +1126,8 @@ h3 {
 }
 
 .profile-card.selected {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .avatar {
@@ -1110,10 +1136,12 @@ h3 {
   width: 4rem;
   height: 4rem;
   border-radius: 18px;
-  background: #111111;
+  background: linear-gradient(135deg, var(--avatar-a, #111111), var(--avatar-b, #333333));
   color: #ffffff;
   font-size: 1.1rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 
 .profile-head {
@@ -1126,9 +1154,9 @@ h3 {
 .verified-chip {
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
-  background: var(--surface-muted);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -1180,7 +1208,8 @@ h3 {
 }
 
 .metric-tile.highlight {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .metric-tile strong {
@@ -1212,13 +1241,18 @@ h3 {
   background: #cfcfcf;
 }
 
-.status-item.done .status-dot,
+.status-item.done .status-dot {
+  background: var(--accent);
+}
+
 .status-item.current .status-dot {
-  background: #111111;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
 }
 
 .status-item.current {
-  border-color: #111111;
+  border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .chat-panel {
@@ -1267,9 +1301,10 @@ h3 {
 }
 
 .status-pill {
-  background: #111111;
+  background: var(--accent);
   color: #ffffff;
-  border-color: #111111;
+  border-color: var(--accent);
+  font-weight: 700;
 }
 
 .payment-intro {
@@ -1312,7 +1347,7 @@ h3 {
 .tracker-progress-bar {
   width: 0;
   height: 100%;
-  background: #111111;
+  background: linear-gradient(90deg, var(--accent), #EA580C);
   transition: width 180ms ease;
 }
 
@@ -1395,11 +1430,11 @@ h3 {
 }
 
 .before-photo {
-  background: linear-gradient(180deg, #6a6a6a, #222222);
+  background: linear-gradient(160deg, #7f4130, #3a1a10);
 }
 
 .after-photo {
-  background: linear-gradient(180deg, #4f4f4f, #111111);
+  background: linear-gradient(160deg, #1a5c4a, #0b2e25);
 }
 
 .photo-card span {
