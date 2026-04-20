@@ -1,8 +1,17 @@
+const serviceIcons = {
+  plumbing: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>`,
+  electrician: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  locksmith: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  hvac: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>`,
+  appliance: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  handyman: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+};
+
 const services = {
   plumbing: {
     id: "plumbing",
     name: "Plumber",
-    icon: "&#x1F6B0;",
+    icon: serviceIcons.plumbing,
     estimate: [129, 179],
     summary: "Burst pipes, leaks, clogs, water heater issues",
     keywords: ["leak", "pipe", "sink", "drain", "toilet", "water heater"],
@@ -10,7 +19,7 @@ const services = {
   electrician: {
     id: "electrician",
     name: "Electrician",
-    icon: "&#x1F50C;",
+    icon: serviceIcons.electrician,
     estimate: [149, 229],
     summary: "Outages, panel issues, outlets, fixture installs",
     keywords: ["power", "outlet", "breaker", "panel", "light", "sparks"],
@@ -18,7 +27,7 @@ const services = {
   locksmith: {
     id: "locksmith",
     name: "Locksmith",
-    icon: "&#x1F510;",
+    icon: serviceIcons.locksmith,
     estimate: [89, 149],
     summary: "Lockouts, rekeying, smart locks, broken keys",
     keywords: ["lock", "door", "key", "locked out", "smart lock"],
@@ -26,7 +35,7 @@ const services = {
   hvac: {
     id: "hvac",
     name: "HVAC",
-    icon: "&#x2744;&#xFE0F;",
+    icon: serviceIcons.hvac,
     estimate: [169, 269],
     summary: "No cooling, no heat, thermostat, airflow",
     keywords: ["ac", "heat", "hvac", "furnace", "thermostat", "air"],
@@ -34,7 +43,7 @@ const services = {
   appliance: {
     id: "appliance",
     name: "Appliance",
-    icon: "&#x1F9FA;",
+    icon: serviceIcons.appliance,
     estimate: [119, 199],
     summary: "Washer, dryer, fridge, dishwasher service",
     keywords: ["washer", "dryer", "fridge", "dishwasher", "appliance"],
@@ -42,12 +51,48 @@ const services = {
   handyman: {
     id: "handyman",
     name: "Handyman",
-    icon: "&#x1F6E0;&#xFE0F;",
+    icon: serviceIcons.handyman,
     estimate: [109, 169],
     summary: "Assembly, mounting, patching, minor repairs",
     keywords: ["mount", "assemble", "repair", "patch", "furniture"],
   },
 };
+
+// ─── Persistence ───────────────────────────────────────────────────────────
+
+const LS = {
+  users:    "fn_users",
+  partners: "fn_partners",
+  bookings: "fn_bookings",
+};
+
+function lsGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+}
+
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
+function saveUser(record) {
+  const users = lsGet(LS.users);
+  users.unshift({ id: Date.now(), createdAt: new Date().toISOString(), status: "pending", ...record });
+  lsSet(LS.users, users);
+}
+
+function savePartner(record) {
+  const partners = lsGet(LS.partners);
+  partners.unshift({ id: Date.now(), createdAt: new Date().toISOString(), status: "pending", ...record });
+  lsSet(LS.partners, partners);
+}
+
+function saveBooking(record) {
+  const bookings = lsGet(LS.bookings);
+  bookings.unshift({ id: Date.now(), createdAt: new Date().toISOString(), ...record });
+  lsSet(LS.bookings, bookings);
+}
+
+// ───────────────────────────────────────────────────────────────────────────
 
 const defaultLocation = {
   latitude: 40.7465,
@@ -266,6 +311,8 @@ const state = {
   accountName: "",
   accountEmail: "",
   accountPhone: "",
+  savedCard: null,
+  showNewCardEntry: false,
   userLocation: { ...defaultLocation, accuracy: null, source: "fallback" },
   currentLocationText: "Detecting location...",
   favorites: new Set([1, 6]),
@@ -282,7 +329,7 @@ const state = {
   trackingStage: 0,
 };
 
-const sheetTabOrder = ["booking", "payment", "tracking"];
+const sheetTabOrder = ["booking", "payment", "tracking", "profile"];
 
 const statusSteps = [
   "Booked",
@@ -498,6 +545,7 @@ function getSheetTabLabel(tab) {
     booking: "Booking",
     payment: "Payment",
     tracking: "Live tracker",
+    profile: "Profile",
   };
   return labels[tab] ?? tab;
 }
@@ -506,13 +554,16 @@ function isSheetTabAvailable(tab) {
   if (tab === "booking") return true;
   if (tab === "payment") return state.hasBooking;
   if (tab === "tracking") return state.paymentCompleted;
+  if (tab === "profile") return true;
   return false;
 }
 
 function getPreviousSheetTab() {
+  if (state.activeSheetTab === "profile") return null;
   const currentIndex = sheetTabOrder.indexOf(state.activeSheetTab);
   for (let index = currentIndex - 1; index >= 0; index -= 1) {
     const candidate = sheetTabOrder[index];
+    if (candidate === "profile") continue;
     if (isSheetTabAvailable(candidate)) {
       return candidate;
     }
@@ -602,6 +653,11 @@ function renderSheetHeader() {
       title: `Track ${pro.name} like a live ride.`,
       copy: "See the route between you and your technician, how far away they are, and the current ETA from the map above.",
     },
+    profile: {
+      eyebrow: "Account",
+      title: "Your profile and saved payment.",
+      copy: "Update your name, email, and phone number, or manage your saved card for faster checkout.",
+    },
   }[state.activeSheetTab];
 
   const previousTab = getPreviousSheetTab();
@@ -643,14 +699,15 @@ function renderLocationLayer() {
     .slice(0, 3)
     .map(
       (pro) => `
-        <article class="nearby-card">
+        <article class="nearby-card nearby-card-pick" data-pick-pro="${pro.id}" role="button" tabindex="0">
           <div>
             <strong>${pro.name}</strong>
-            <p class="muted">${getSelectedService().name} - ${pro.experience} - ${formatDistanceMiles(getDistanceMiles(pro))}</p>
+            <p class="muted">${getSelectedService().name} &middot; ${pro.experience} &middot; ${formatDistanceMiles(getDistanceMiles(pro))}</p>
           </div>
           <div class="nearby-card-meta">
             <span>${pro.price}</span>
             <span>&#9733; ${pro.rating}</span>
+            <button class="flow-pick-btn" data-pick-pro="${pro.id}" type="button">Book</button>
           </div>
         </article>
       `
@@ -1030,6 +1087,94 @@ function bookProfessional(profileId) {
   renderAll();
 }
 
+function formatCardNumber(raw) {
+  return raw.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+}
+
+function formatExpiry(raw) {
+  const digits = raw.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)} / ${digits.slice(2)}`;
+}
+
+function getCardBrand(number) {
+  const n = number.replace(/\s/g, "");
+  if (/^4/.test(n)) return "Visa";
+  if (/^5[1-5]/.test(n)) return "Mastercard";
+  if (/^3[47]/.test(n)) return "Amex";
+  if (/^6/.test(n)) return "Discover";
+  return "Card";
+}
+
+function renderCardFormVisibility() {
+  const cardForm = document.getElementById("card-form");
+  const savedCardDisplay = document.getElementById("saved-card-display");
+  const newCardFields = document.getElementById("new-card-fields");
+  if (!cardForm) return;
+
+  const isCard = state.paymentMethod === "card";
+  cardForm.classList.toggle("hidden-panel", !isCard);
+
+  if (isCard) {
+    const useSaved = state.savedCard !== null && !state.showNewCardEntry;
+    savedCardDisplay.classList.toggle("hidden-panel", !useSaved);
+    newCardFields.classList.toggle("hidden-panel", useSaved);
+    if (state.savedCard) {
+      const label = document.getElementById("saved-card-label");
+      if (label) {
+        label.textContent = `${getCardBrand(state.savedCard.number)} •••• ${state.savedCard.number.slice(-4)}`;
+      }
+    }
+  }
+}
+
+function renderProfile() {
+  const nameEl = document.getElementById("profile-name");
+  const emailEl = document.getElementById("profile-email");
+  const phoneEl = document.getElementById("profile-phone");
+  if (nameEl) nameEl.value = state.accountName;
+  if (emailEl) emailEl.value = state.accountEmail;
+  if (phoneEl) phoneEl.value = state.accountPhone;
+
+  const savedCardBlock = document.getElementById("profile-saved-card");
+  const noCardMsg = document.getElementById("profile-no-card-msg");
+  if (!savedCardBlock || !noCardMsg) return;
+
+  if (state.savedCard) {
+    const brand = getCardBrand(state.savedCard.number);
+    savedCardBlock.classList.remove("hidden-panel");
+    noCardMsg.classList.add("hidden-panel");
+    savedCardBlock.innerHTML = `
+      <div class="profile-card-row">
+        <div class="profile-card-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <div>
+            <span class="field-label" style="margin-bottom:0.15rem;">${brand}</span>
+            <strong>•••• •••• •••• ${state.savedCard.number.slice(-4)}</strong>
+            <span class="muted" style="font-size:0.82rem;">Expires ${state.savedCard.expiry} &middot; ${state.savedCard.name}</span>
+          </div>
+        </div>
+        <button id="remove-saved-card" class="ghost-button" type="button">Remove</button>
+      </div>
+    `;
+    document.getElementById("remove-saved-card")?.addEventListener("click", () => {
+      state.savedCard = null;
+      state.showNewCardEntry = false;
+      renderProfile();
+      renderCardFormVisibility();
+    });
+  } else {
+    savedCardBlock.classList.add("hidden-panel");
+    noCardMsg.classList.remove("hidden-panel");
+  }
+
+  const profileCardForm = document.getElementById("profile-card-form");
+  if (profileCardForm) profileCardForm.classList.add("hidden-panel");
+
+  const addCardBtn = document.getElementById("add-card-btn");
+  if (addCardBtn) addCardBtn.textContent = state.savedCard ? "Replace card" : "Add card";
+}
+
 function renderAll() {
   renderFlow();
   renderSheetTabs();
@@ -1049,6 +1194,8 @@ function renderAll() {
   renderMapDetail();
   updateEstimate();
   updateSuggestion();
+  renderCardFormVisibility();
+  renderProfile();
 }
 
 function advanceTracking() {
@@ -1117,6 +1264,36 @@ function submitPayment() {
   const [estimate] = getEstimateRange();
   const total = Math.round(estimate * 0.52) + Math.round(estimate * 0.36) + Math.round(estimate * 0.12) + state.tip;
 
+  // Capture and optionally save card data
+  if (state.paymentMethod === "card" && !state.savedCard) {
+    const cardNumberEl = document.getElementById("card-number");
+    const cardExpiryEl = document.getElementById("card-expiry");
+    const cardNameEl = document.getElementById("card-name");
+    const saveCardEl = document.getElementById("save-card");
+    if (cardNumberEl && saveCardEl && saveCardEl.checked) {
+      const rawNumber = cardNumberEl.value.replace(/\s/g, "");
+      if (rawNumber.length >= 4) {
+        state.savedCard = {
+          number: rawNumber,
+          expiry: cardExpiryEl?.value ?? "",
+          name: cardNameEl?.value?.trim() || state.accountName || "Cardholder",
+        };
+        state.showNewCardEntry = false;
+      }
+    }
+  }
+
+  saveBooking({
+    userName:      state.accountName || "Guest",
+    userEmail:     state.accountEmail || "",
+    proName:       pro.name,
+    proCategory:   pro.category,
+    service:       services[pro.category].name,
+    amount:        total,
+    paymentMethod: getPaymentMethodLabel(state.paymentMethod),
+    tip:           state.tip,
+  });
+
   state.paymentCompleted = true;
   state.activeSheetTab = "tracking";
   state.trackingStage = 1;
@@ -1153,6 +1330,7 @@ function setPaymentMethod(method) {
   [...paymentMethods.querySelectorAll(".method")].forEach((button) => {
     button.classList.toggle("active", button.dataset.payment === method);
   });
+  renderCardFormVisibility();
 }
 
 function setTip(value) {
@@ -1294,6 +1472,7 @@ function handleSignupSubmit(event) {
     return;
   }
 
+  saveUser({ type: "signup", name: state.accountName, email: state.accountEmail, phone: "" });
   setFlowStep(4);
 }
 
@@ -1308,6 +1487,7 @@ function handleLoginSubmit(event) {
     return;
   }
 
+  saveUser({ type: "login", name: state.accountName, email: state.accountEmail, phone: "" });
   setFlowStep(4);
 }
 
@@ -1327,6 +1507,7 @@ function handleGuestSubmit(event) {
     return;
   }
 
+  saveUser({ type: "guest", name: state.accountName, email: state.accountEmail, phone: state.accountPhone });
   setFlowStep(4);
 }
 
@@ -1367,6 +1548,17 @@ function handlePartnerSubmit(event) {
   }
 
   state.partnerApplicationSubmitted = true;
+  savePartner({
+    name:       partnerName.value.trim(),
+    business:   partnerBusiness.value.trim(),
+    email:      partnerEmail.value.trim(),
+    phone:      partnerPhone.value.trim(),
+    trade:      partnerTrade.value,
+    experience: partnerExperience.value.trim(),
+    area:       partnerArea.value.trim(),
+    license:    partnerLicense.value.trim(),
+    notes:      partnerNotes.value.trim(),
+  });
   renderPartnerState();
 }
 
@@ -1394,6 +1586,23 @@ function openLiveMap() {
   completeFlow();
   document.querySelector(".map-stage").scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+nearbyPreview.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-pick-pro]");
+  if (!target) return;
+  const proId = Number(target.dataset.pickPro);
+  selectProfessional(proId);
+  openLiveMap();
+});
+
+nearbyPreview.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const target = event.target.closest("[data-pick-pro]");
+  if (!target) return;
+  const proId = Number(target.dataset.pickPro);
+  selectProfessional(proId);
+  openLiveMap();
+});
 
 categoryGrid.addEventListener("click", handleCategoryClicks);
 profilesList.addEventListener("click", handleProfileClicks);
@@ -1468,6 +1677,24 @@ starRow.addEventListener("click", (event) => {
   setRating(Number(button.dataset.rating));
 });
 
+starRow.addEventListener("mouseover", (event) => {
+  const button = event.target.closest("[data-rating]");
+  if (!button) return;
+  const hoverValue = Number(button.dataset.rating);
+  [...starRow.querySelectorAll(".star")].forEach((star) => {
+    const v = Number(star.dataset.rating);
+    star.classList.toggle("preview", v <= hoverValue);
+    star.classList.toggle("inactive", v > hoverValue);
+  });
+});
+
+starRow.addEventListener("mouseleave", () => {
+  [...starRow.querySelectorAll(".star")].forEach((star) => {
+    star.classList.remove("preview");
+  });
+  setRating(state.rating);
+});
+
 document.getElementById("match-button").addEventListener("click", runInstantMatch);
 document.getElementById("panic-fab").addEventListener("click", () => triggerEmergency("water leak"));
 locationPill.addEventListener("click", detectLocation);
@@ -1501,8 +1728,91 @@ document.getElementById("chat-send").addEventListener("click", () => {
 payButton.addEventListener("click", submitPayment);
 document.getElementById("submit-review").addEventListener("click", submitReview);
 
+// Card number formatting
+document.getElementById("card-number").addEventListener("input", (e) => {
+  const cursor = e.target.selectionStart;
+  const prev = e.target.value;
+  e.target.value = formatCardNumber(e.target.value);
+  const diff = e.target.value.length - prev.length;
+  e.target.setSelectionRange(cursor + diff, cursor + diff);
+});
+
+document.getElementById("card-expiry").addEventListener("input", (e) => {
+  e.target.value = formatExpiry(e.target.value);
+});
+
+document.getElementById("card-cvv").addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+});
+
+// "Use different card" button in payment panel
+document.getElementById("use-new-card").addEventListener("click", () => {
+  state.showNewCardEntry = true;
+  renderCardFormVisibility();
+});
+
+// Profile save
+document.getElementById("save-profile-btn").addEventListener("click", () => {
+  const n = document.getElementById("profile-name").value.trim();
+  const e = document.getElementById("profile-email").value.trim();
+  const p = document.getElementById("profile-phone").value.trim();
+  if (n) state.accountName = n;
+  if (e) state.accountEmail = e;
+  if (p) state.accountPhone = p;
+  const confirm = document.getElementById("profile-save-confirm");
+  confirm.classList.remove("hidden-panel");
+  setTimeout(() => confirm.classList.add("hidden-panel"), 2500);
+  locationPill.textContent = state.accountName || locationPill.textContent;
+});
+
+// Add / replace card from profile panel
+document.getElementById("add-card-btn").addEventListener("click", () => {
+  const profileCardForm = document.getElementById("profile-card-form");
+  profileCardForm.classList.toggle("hidden-panel");
+  // Pre-fill from saved card if replacing
+  if (state.savedCard) {
+    document.getElementById("p-card-number").value = state.savedCard.number;
+    document.getElementById("p-card-expiry").value = state.savedCard.expiry;
+    document.getElementById("p-card-name").value = state.savedCard.name;
+  }
+});
+
+document.getElementById("cancel-card-btn").addEventListener("click", () => {
+  document.getElementById("profile-card-form").classList.add("hidden-panel");
+});
+
+document.getElementById("save-card-btn").addEventListener("click", () => {
+  const num = document.getElementById("p-card-number").value.replace(/\s/g, "");
+  const exp = document.getElementById("p-card-expiry").value;
+  const name = document.getElementById("p-card-name").value.trim();
+  if (num.length < 4) return;
+  state.savedCard = { number: num, expiry: exp, name: name || state.accountName || "Cardholder" };
+  state.showNewCardEntry = false;
+  renderProfile();
+  renderCardFormVisibility();
+});
+
+// Profile card number + expiry formatting
+document.getElementById("p-card-number").addEventListener("input", (e) => {
+  e.target.value = formatCardNumber(e.target.value);
+});
+document.getElementById("p-card-expiry").addEventListener("input", (e) => {
+  e.target.value = formatExpiry(e.target.value);
+});
+document.getElementById("p-card-cvv").addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+});
+
 renderAll();
 setPaymentMethod(state.paymentMethod);
 setTip(state.tip);
 setRating(state.rating);
+
+const liveMap = new maplibregl.Map({
+  container: "map",
+  style: "https://tiles.openfreemap.org/styles/liberty",
+  center: [-71.0589, 42.3601],
+  zoom: 13,
+  attributionControl: false,
+});
 detectLocation();

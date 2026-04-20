@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -219,7 +221,15 @@
           <p class="eyebrow">Home service dispatch</p>
           <h1>FixNow gets trusted help to your door fast.</h1>
         </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
         <button class="location-pill" id="location-pill" type="button">Detecting location...</button>
+        <a href="admin.html" style="text-decoration:none;">
+          <button class="location-pill" type="button" style="gap:0.4rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Admin
+          </button>
+        </a>
+      </div>
       </div>
 
       <section class="search-card panel">
@@ -238,6 +248,7 @@
       </section>
 
       <section class="map-canvas panel">
+        <div id="map"></div>
         <div class="map-glow"></div>
         <div class="route-line"></div>
         <div class="user-location-marker" id="user-location-marker" aria-label="Your current location">
@@ -331,6 +342,7 @@
         <button class="sheet-tab active" data-sheet-tab="booking" aria-selected="true" type="button">Booking</button>
         <button class="sheet-tab" data-sheet-tab="payment" aria-selected="false" type="button">Payment</button>
         <button class="sheet-tab" data-sheet-tab="tracking" aria-selected="false" type="button">Live tracker</button>
+        <button class="sheet-tab" data-sheet-tab="profile" aria-selected="false" type="button">Profile</button>
       </div>
 
       <div class="sheet-panel active" data-sheet-panel="booking">
@@ -440,6 +452,39 @@
             <button class="method active" data-payment="card" type="button">Card</button>
             <button class="method" data-payment="applepay" type="button">Apple Pay</button>
             <button class="method" data-payment="wallet" type="button">Wallet</button>
+          </div>
+
+          <div id="card-form" class="card-form">
+            <div id="saved-card-display" class="saved-card-row hidden-panel">
+              <div class="saved-card-chip">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <div>
+                  <span class="field-label" style="margin-bottom:0.1rem;">Saved card</span>
+                  <strong id="saved-card-label">•••• •••• •••• ––––</strong>
+                </div>
+              </div>
+              <button id="use-new-card" class="ghost-button" type="button">Change</button>
+            </div>
+            <div id="new-card-fields">
+              <label class="field-label" for="card-name">Cardholder name</label>
+              <input id="card-name" type="text" placeholder="Jordan Lee" autocomplete="cc-name">
+              <label class="field-label" for="card-number">Card number</label>
+              <input id="card-number" type="text" inputmode="numeric" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+              <div class="card-row-grid">
+                <div>
+                  <label class="field-label" for="card-expiry">Expiry date</label>
+                  <input id="card-expiry" type="text" inputmode="numeric" placeholder="MM / YY" maxlength="7" autocomplete="cc-exp">
+                </div>
+                <div>
+                  <label class="field-label" for="card-cvv">Security code</label>
+                  <input id="card-cvv" type="text" inputmode="numeric" placeholder="CVV" maxlength="4" autocomplete="cc-csc">
+                </div>
+              </div>
+              <label class="save-card-label">
+                <input id="save-card" type="checkbox">
+                <span>Save card for future payments</span>
+              </label>
+            </div>
           </div>
 
           <div class="cost-breakdown">
@@ -567,6 +612,65 @@
           </section>
         </div>
       </div>
+      <div class="sheet-panel" data-sheet-panel="profile">
+        <div class="profile-tab-layout">
+
+          <section class="card profile-details-card">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Account</p>
+                <h3>Personal information</h3>
+              </div>
+            </div>
+            <div class="profile-fields">
+              <label class="field-label" for="profile-name">Full name</label>
+              <input id="profile-name" type="text" placeholder="Jordan Lee" autocomplete="name">
+              <label class="field-label" for="profile-email">Email address</label>
+              <input id="profile-email" type="email" placeholder="jordan@example.com" autocomplete="email">
+              <label class="field-label" for="profile-phone">Phone number</label>
+              <input id="profile-phone" type="tel" placeholder="(555) 123-4567" autocomplete="tel">
+              <div class="profile-save-row">
+                <button id="save-profile-btn" class="primary-button" type="button">Save changes</button>
+                <p id="profile-save-confirm" class="save-confirm hidden-panel">Changes saved.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card profile-payment-card">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Payment method</p>
+                <h3>Saved card</h3>
+              </div>
+              <button id="add-card-btn" class="ghost-button" type="button">Add card</button>
+            </div>
+            <div id="profile-saved-card" class="profile-saved-card-block hidden-panel"></div>
+            <p id="profile-no-card-msg" class="muted">No card saved. Add one here or save it during checkout.</p>
+            <div id="profile-card-form" class="card-form hidden-panel" style="margin-top:1rem;">
+              <label class="field-label" for="p-card-name">Cardholder name</label>
+              <input id="p-card-name" type="text" placeholder="Jordan Lee" autocomplete="cc-name">
+              <label class="field-label" for="p-card-number">Card number</label>
+              <input id="p-card-number" type="text" inputmode="numeric" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+              <div class="card-row-grid">
+                <div>
+                  <label class="field-label" for="p-card-expiry">Expiry date</label>
+                  <input id="p-card-expiry" type="text" inputmode="numeric" placeholder="MM / YY" maxlength="7" autocomplete="cc-exp">
+                </div>
+                <div>
+                  <label class="field-label" for="p-card-cvv">Security code</label>
+                  <input id="p-card-cvv" type="text" inputmode="numeric" placeholder="CVV" maxlength="4" autocomplete="cc-csc">
+                </div>
+              </div>
+              <div class="card-edit-actions">
+                <button id="save-card-btn" class="primary-button" type="button">Save card</button>
+                <button id="cancel-card-btn" class="ghost-button" type="button">Cancel</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
     </section>
   </div>
 

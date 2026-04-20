@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixNow — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #0a0a0b;
+      --surface:      #111113;
+      --surface-mid:  #18181c;
+      --surface-high: #222228;
+      --border:       #27272e;
+      --border-light: #2e2e38;
+      --text:         #f4f4f5;
+      --text-muted:   #71717a;
+      --text-dim:     #52525b;
+      --accent:       #F97316;
+      --accent-dim:   rgba(249,115,22,0.12);
+      --green:        #22c55e;
+      --green-dim:    rgba(34,197,94,0.12);
+      --red:          #ef4444;
+      --red-dim:      rgba(239,68,68,0.12);
+      --yellow:       #eab308;
+      --yellow-dim:   rgba(234,179,8,0.12);
+      --radius:       14px;
+      --radius-sm:    10px;
+      --sidebar-w:    220px;
+      --transition:   150ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+    }
+
+    .brand-badge {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #FF9A45, #F97316 50%, #EA580C);
+      display: grid;
+      place-items: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+
+    .brand-label {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-label strong {
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .brand-label span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-section {
+      padding: 0 0.6rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0.4rem 0.55rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-align: left;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .nav-item svg { flex-shrink: 0; opacity: 0.7; }
+
+    .nav-item:hover {
+      background: var(--surface-mid);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--surface-high);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .nav-item.active svg { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      min-width: 1.4rem;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 1rem 0.6rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Main ── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .topbar-left h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-left p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .content {
+      flex: 1;
+      padding: 1.75rem;
+      display: none;
+    }
+
+    .content.active { display: block; }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.2rem;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    .stat-card.accent  .stat-value { color: var(--accent); }
+    .stat-card.green   .stat-value { color: var(--green); }
+    .stat-card.yellow  .stat-value { color: var(--yellow); }
+
+    /* ── Table Card ── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .table-header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .table-filter {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .filter-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-light);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .filter-btn:hover { background: var(--surface-mid); color: var(--text); }
+    .filter-btn.active { background: var(--surface-high); color: var(--text); border-color: var(--border-light); }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 0.65rem 1.25rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    tbody tr:last-child { border-bottom: 0; }
+    tbody tr:hover { background: var(--surface-mid); }
+
+    td {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    .td-name strong {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .td-name span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 0.1rem;
+    }
+
+    .td-mono {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .badge::before {
+      content: "";
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .badge-pending  { background: var(--yellow-dim); color: var(--yellow); }
+    .badge-pending::before  { background: var(--yellow); }
+    .badge-approved { background: var(--green-dim);  color: var(--green); }
+    .badge-approved::before { background: var(--green); }
+    .badge-rejected { background: var(--red-dim);    color: var(--red); }
+    .badge-rejected::before { background: var(--red); }
+    .badge-signup   { background: var(--accent-dim); color: var(--accent); }
+    .badge-login    { background: rgba(139,92,246,0.12); color: #a78bfa; }
+    .badge-guest    { background: rgba(14,165,233,0.12); color: #38bdf8; }
+
+    /* ── Action Buttons ── */
+    .action-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background var(--transition), opacity var(--transition), transform var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-approve {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(34,197,94,0.2);
+    }
+
+    .btn-approve:hover { background: rgba(34,197,94,0.2); }
+
+    .btn-reject {
+      background: var(--red-dim);
+      color: var(--red);
+      border-color: rgba(239,68,68,0.2);
+    }
+
+    .btn-reject:hover { background: rgba(239,68,68,0.2); }
+
+    .btn-view {
+      background: var(--surface-high);
+      color: var(--text-muted);
+      border-color: var(--border-light);
+    }
+
+    .btn-view:hover { color: var(--text); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border-light);
+    }
+
+    .btn-ghost:hover { background: var(--surface-mid); color: var(--text); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover { background: #EA580C; }
+
+    .btn-danger {
+      background: var(--red-dim);
+      color: var(--red);
+      border-color: rgba(239,68,68,0.2);
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg { opacity: 0.3; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.88rem; }
+
+    /* ── Detail Drawer ── */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 40;
+      backdrop-filter: blur(4px);
+    }
+
+    .drawer-overlay.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(480px, 95vw);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 41;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 240ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 1;
+    }
+
+    .drawer-header h2 { font-size: 1rem; font-weight: 700; }
+    .drawer-header p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .drawer-body { padding: 1.5rem; display: grid; gap: 1.25rem; }
+
+    .detail-section { display: grid; gap: 0.7rem; }
+
+    .detail-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.35rem;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+
+    .detail-item {
+      background: var(--surface-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.9rem;
+    }
+
+    .detail-item .label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-item .value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .detail-item.full { grid-column: span 2; }
+
+    .drawer-actions {
+      display: flex;
+      gap: 0.65rem;
+      padding: 1rem 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+    }
+
+    .drawer-actions .btn { flex: 1; text-align: center; padding: 0.65rem 1rem; }
+
+    /* ── Toast ── */
+    .toast-stack {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 50;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-high);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.85rem;
+      font-weight: 500;
+      animation: toast-in 200ms ease forwards;
+      min-width: 220px;
+    }
+
+    .toast.green { border-color: rgba(34,197,94,0.3); }
+    .toast.red   { border-color: rgba(239,68,68,0.3); }
+
+    .toast-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .toast.green .toast-dot { background: var(--green); }
+    .toast.red   .toast-dot { background: var(--red); }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Misc ── */
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .notes-block {
+      background: var(--surface-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .refresh-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      td, th { padding: 0.65rem 0.85rem; }
+    }
+
+    /* ── Passcode gate ── */
+    .gate {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1.5rem;
+    }
+
+    .gate-card {
+      width: min(100%, 360px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.25rem 2rem;
+      display: grid;
+      gap: 1.1rem;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .gate-logo {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #FF9A45, #F97316 50%, #EA580C);
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.06em;
+      margin: 0 auto 0.25rem;
+      box-shadow: 0 0 28px rgba(249,115,22,0.35);
+    }
+
+    .gate-card h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .gate-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: -0.4rem;
+    }
+
+    .gate-input-wrap {
+      position: relative;
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 0.9rem 2.75rem 0.9rem 1rem;
+      background: var(--surface-mid);
+      border: 1.5px solid var(--border-light);
+      border-radius: 12px;
+      color: var(--text);
+      font: inherit;
+      font-size: 1.05rem;
+      letter-spacing: 0.2em;
+      text-align: center;
+      outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .gate-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+    }
+
+    .gate-toggle {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-dim);
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .gate-toggle:hover { color: var(--text-muted); }
+
+    .gate-error {
+      font-size: 0.82rem;
+      color: var(--red);
+      font-weight: 600;
+      display: none;
+      margin-top: -0.25rem;
+    }
+
+    .gate-error.visible { display: block; }
+
+    .gate-btn {
+      padding: 0.9rem 1.25rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .gate-btn:hover {
+      background: #EA580C;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(249,115,22,0.35);
+    }
+
+    .gate-btn:active { transform: translateY(0); }
+
+    .gate-shake {
+      animation: gate-shake 320ms cubic-bezier(0.36,0.07,0.19,0.97);
+    }
+
+    @keyframes gate-shake {
+      10%, 90%  { transform: translateX(-2px); }
+      20%, 80%  { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60%  { transform: translateX(6px); }
+    }
+
+    .shell { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── Passcode gate ── -->
+<div class="gate" id="gate">
+  <div class="gate-card" id="gate-card">
+    <div class="gate-logo">FN</div>
+    <h1>Admin access</h1>
+    <p>Enter your passcode to continue</p>
+    <div class="gate-input-wrap">
+      <input class="gate-input" id="gate-input" type="password"
+             placeholder="••••••••" maxlength="12" autocomplete="off" autofocus>
+      <button class="gate-toggle" id="gate-toggle" type="button" aria-label="Show passcode">
+        <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <p class="gate-error" id="gate-error">Incorrect passcode. Please try again.</p>
+    <button class="gate-btn" id="gate-btn" type="button">Continue</button>
+  </div>
+</div>
+
+<div class="shell" id="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">FN</div>
+      <div class="brand-label">
+        <strong>FixNow</strong>
+        <span>Admin panel</span>
+      </div>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active" data-view="dashboard" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-label">Users</div>
+      <button class="nav-item" data-view="users" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+        <span class="nav-badge" id="nav-users-badge">0</span>
+      </button>
+      <button class="nav-item" data-view="partners" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Partners
+        <span class="nav-badge" id="nav-partners-badge">0</span>
+      </button>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-label">Commerce</div>
+      <button class="nav-item" data-view="bookings" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Bookings
+        <span class="nav-badge" id="nav-bookings-badge">0</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="index.html" style="text-decoration:none;">
+        <button class="nav-item" style="width:100%;" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Back to app
+        </button>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="view-title">Dashboard</h1>
+        <p id="view-sub">Overview of all activity</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="refresh-time" id="refresh-time"></span>
+        <button class="btn btn-ghost" id="refresh-btn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-4.1"/></svg>
+          Refresh
+        </button>
+        <button class="btn btn-danger" id="clear-btn" type="button">Clear all data</button>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="content active" id="view-dashboard">
+      <div class="stats-bar" id="stats-bar"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="table-card">
+          <div class="table-header">
+            <div><h2>Recent users</h2><p>Latest signups and logins</p></div>
+          </div>
+          <table><thead><tr>
+            <th>Name</th><th>Type</th><th>Status</th><th>Date</th>
+          </tr></thead>
+          <tbody id="dash-users"></tbody></table>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <div><h2>Recent partners</h2><p>Awaiting review</p></div>
+          </div>
+          <table><thead><tr>
+            <th>Name</th><th>Trade</th><th>Status</th><th>Date</th>
+          </tr></thead>
+          <tbody id="dash-partners"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="content" id="view-users">
+      <div class="table-card">
+        <div class="table-header">
+          <div><h2>All users</h2><p>Everyone who signed up, logged in, or used guest checkout</p></div>
+          <div class="table-filter" id="user-filter">
+            <button class="filter-btn active" data-filter="all" type="button">All</button>
+            <button class="filter-btn" data-filter="pending" type="button">Pending</button>
+            <button class="filter-btn" data-filter="approved" type="button">Approved</button>
+            <button class="filter-btn" data-filter="rejected" type="button">Rejected</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Name / Email</th><th>Phone</th><th>Type</th><th>Status</th><th>Joined</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="users-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Partners -->
+    <div class="content" id="view-partners">
+      <div class="table-card">
+        <div class="table-header">
+          <div><h2>Partner applications</h2><p>Review and approve service professionals</p></div>
+          <div class="table-filter" id="partner-filter">
+            <button class="filter-btn active" data-filter="all" type="button">All</button>
+            <button class="filter-btn" data-filter="pending" type="button">Pending</button>
+            <button class="filter-btn" data-filter="approved" type="button">Approved</button>
+            <button class="filter-btn" data-filter="rejected" type="button">Rejected</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Name / Business</th><th>Trade</th><th>Area</th><th>Exp.</th><th>Status</th><th>Applied</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="partners-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bookings -->
+    <div class="content" id="view-bookings">
+      <div class="table-card">
+        <div class="table-header">
+          <div><h2>All bookings</h2><p>Every completed payment transaction</p></div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Customer</th><th>Professional</th><th>Service</th><th>Amount</th><th>Method</th><th>Date</th>
+          </tr></thead>
+          <tbody id="bookings-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- Detail Drawer -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <h2 id="drawer-title">Details</h2>
+      <p id="drawer-sub"></p>
+    </div>
+    <button class="btn btn-ghost" id="drawer-close" style="padding:0.4rem 0.7rem;" type="button">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div class="drawer-actions" id="drawer-actions"></div>
+</aside>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+  const LS = { users: "fn_users", partners: "fn_partners", bookings: "fn_bookings" };
+
+  function lsGet(key)       { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+  function lsSet(key, val)  { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+
+  // ── Seed demo data if empty ──────────────────────────────────────────────
+  function seedDemoData() {
+    if (lsGet(LS.users).length === 0) {
+      lsSet(LS.users, [
+        { id: 1001, type: "signup", name: "Jordan Lee", email: "jordan@example.com", phone: "", status: "approved", createdAt: new Date(Date.now() - 86400000 * 2).toISOString() },
+        { id: 1002, type: "guest",  name: "Casey Morgan", email: "", phone: "(555) 234-5678", status: "pending",  createdAt: new Date(Date.now() - 3600000 * 5).toISOString() },
+        { id: 1003, type: "login",  name: "alex",  email: "alex@example.com", phone: "", status: "pending",  createdAt: new Date(Date.now() - 3600000 * 1).toISOString() },
+      ]);
+    }
+    if (lsGet(LS.partners).length === 0) {
+      lsSet(LS.partners, [
+        { id: 2001, name: "Marcus Reed", business: "Reed Plumbing LLC", email: "marcus@reedplumbing.com", phone: "(555) 111-2222", trade: "plumbing", experience: "8", area: "Boston, Cambridge", license: "MA-PLB-4821", notes: "Emergency repairs and water heater installs.", status: "approved", createdAt: new Date(Date.now() - 86400000 * 5).toISOString() },
+        { id: 2002, name: "Alina Torres", business: "Torres Electric", email: "alina@torreselectric.com", phone: "(555) 333-4444", trade: "electrician", experience: "7", area: "Boston, Somerville", license: "MA-ELC-7712", notes: "Residential panel work and EV charger installs.", status: "pending", createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+        { id: 2003, name: "Devon Price", business: "Price Lock & Key", email: "devon@pricelocksmith.com", phone: "(555) 555-6666", trade: "locksmith", experience: "10", area: "Boston, Brookline", license: "Insured & bonded", notes: "24/7 availability, no property damage policy.", status: "pending", createdAt: new Date(Date.now() - 3600000 * 3).toISOString() },
+      ]);
+    }
+    if (lsGet(LS.bookings).length === 0) {
+      lsSet(LS.bookings, [
+        { id: 3001, userName: "Jordan Lee", userEmail: "jordan@example.com", proName: "Marcus Reed", service: "Plumber", amount: 177, paymentMethod: "Card", tip: 0, createdAt: new Date(Date.now() - 86400000 * 1).toISOString() },
+        { id: 3002, userName: "Casey Morgan", userEmail: "", proName: "Devon Price", service: "Locksmith", amount: 142, paymentMethod: "Apple Pay", tip: 10, createdAt: new Date(Date.now() - 3600000 * 6).toISOString() },
+      ]);
+    }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function fmtTime(iso) {
+    const d = new Date(iso);
+    return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  }
+
+  function fmtDateTime(iso) { return `${fmtDate(iso)} ${fmtTime(iso)}`; }
+
+  function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : "—"; }
+
+  function badge(status) {
+    const map = { pending: "Pending", approved: "Approved", rejected: "Rejected" };
+    return `<span class="badge badge-${status}">${map[status] || status}</span>`;
+  }
+
+  function typeBadge(type) {
+    return `<span class="badge badge-${type}">${capitalize(type)}</span>`;
+  }
+
+  function toast(msg, color = "green") {
+    const stack = document.getElementById("toast-stack");
+    const el = document.createElement("div");
+    el.className = `toast ${color}`;
+    el.innerHTML = `<span class="toast-dot"></span>${msg}`;
+    stack.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  // ── Stats ────────────────────────────────────────────────────────────────
+  function renderStats() {
+    const users    = lsGet(LS.users);
+    const partners = lsGet(LS.partners);
+    const bookings = lsGet(LS.bookings);
+    const revenue  = bookings.reduce((s, b) => s + (b.amount || 0), 0);
+    const pending  = partners.filter(p => p.status === "pending").length;
+
+    document.getElementById("stats-bar").innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Total users</div>
+        <div class="stat-value">${users.length}</div>
+        <div class="stat-sub">${users.filter(u => u.type === "signup").length} signups &middot; ${users.filter(u => u.type === "guest").length} guests</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Pending partners</div>
+        <div class="stat-value">${pending}</div>
+        <div class="stat-sub">${partners.length} total applications</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Total bookings</div>
+        <div class="stat-value">${bookings.length}</div>
+        <div class="stat-sub">All completed payments</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-label">Revenue</div>
+        <div class="stat-value">$${revenue.toLocaleString()}</div>
+        <div class="stat-sub">Avg $${bookings.length ? Math.round(revenue / bookings.length) : 0} / booking</div>
+      </div>
+    `;
+
+    // Update nav badges
+    document.getElementById("nav-users-badge").textContent    = users.length;
+    document.getElementById("nav-partners-badge").textContent = pending;
+    document.getElementById("nav-bookings-badge").textContent = bookings.length;
+  }
+
+  // ── Dashboard quick tables ────────────────────────────────────────────────
+  function renderDashboard() {
+    const users    = lsGet(LS.users).slice(0, 5);
+    const partners = lsGet(LS.partners).filter(p => p.status === "pending").slice(0, 5);
+
+    document.getElementById("dash-users").innerHTML = users.length
+      ? users.map(u => `<tr>
+          <td class="td-name"><strong>${u.name || "—"}</strong><span>${u.email || u.phone || "—"}</span></td>
+          <td>${typeBadge(u.type)}</td>
+          <td>${badge(u.status)}</td>
+          <td class="td-mono">${fmtDate(u.createdAt)}</td>
+        </tr>`).join("")
+      : `<tr><td colspan="4"><div class="empty-state"><p>No users yet</p></div></td></tr>`;
+
+    document.getElementById("dash-partners").innerHTML = partners.length
+      ? partners.map(p => `<tr>
+          <td class="td-name"><strong>${p.name}</strong><span>${p.business}</span></td>
+          <td>${capitalize(p.trade)}</td>
+          <td>${badge(p.status)}</td>
+          <td class="td-mono">${fmtDate(p.createdAt)}</td>
+        </tr>`).join("")
+      : `<tr><td colspan="4"><div class="empty-state"><p>No pending partners</p></div></td></tr>`;
+  }
+
+  // ── Users table ───────────────────────────────────────────────────────────
+  let userFilter = "all";
+
+  function renderUsers() {
+    let users = lsGet(LS.users);
+    if (userFilter !== "all") users = users.filter(u => u.status === userFilter);
+
+    document.getElementById("users-table").innerHTML = users.length
+      ? users.map(u => `<tr>
+          <td class="td-name"><strong>${u.name || "—"}</strong><span>${u.email || u.phone || "—"}</span></td>
+          <td>${u.phone || "—"}</td>
+          <td>${typeBadge(u.type)}</td>
+          <td>${badge(u.status)}</td>
+          <td class="td-mono">${fmtDate(u.createdAt)}</td>
+          <td>
+            <div class="action-row">
+              ${u.status !== "approved" ? `<button class="btn btn-approve" data-action="approve-user" data-id="${u.id}" type="button">Approve</button>` : ""}
+              ${u.status !== "rejected" ? `<button class="btn btn-reject"  data-action="reject-user"  data-id="${u.id}" type="button">Reject</button>`  : ""}
+              <button class="btn btn-view" data-action="view-user" data-id="${u.id}" type="button">View</button>
+            </div>
+          </td>
+        </tr>`).join("")
+      : `<tr><td colspan="6"><div class="empty-state">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <p>No users match this filter</p>
+          </div></td></tr>`;
+  }
+
+  // ── Partners table ────────────────────────────────────────────────────────
+  let partnerFilter = "all";
+
+  function renderPartners() {
+    let partners = lsGet(LS.partners);
+    if (partnerFilter !== "all") partners = partners.filter(p => p.status === partnerFilter);
+
+    document.getElementById("partners-table").innerHTML = partners.length
+      ? partners.map(p => `<tr>
+          <td class="td-name"><strong>${p.name}</strong><span>${p.business}</span></td>
+          <td>${capitalize(p.trade)}</td>
+          <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.area || "—"}</td>
+          <td>${p.experience ? p.experience + " yrs" : "—"}</td>
+          <td>${badge(p.status)}</td>
+          <td class="td-mono">${fmtDate(p.createdAt)}</td>
+          <td>
+            <div class="action-row">
+              ${p.status !== "approved" ? `<button class="btn btn-approve" data-action="approve-partner" data-id="${p.id}" type="button">Approve</button>` : ""}
+              ${p.status !== "rejected" ? `<button class="btn btn-reject"  data-action="reject-partner"  data-id="${p.id}" type="button">Reject</button>`  : ""}
+              <button class="btn btn-view" data-action="view-partner" data-id="${p.id}" type="button">View</button>
+            </div>
+          </td>
+        </tr>`).join("")
+      : `<tr><td colspan="7"><div class="empty-state">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <p>No partners match this filter</p>
+          </div></td></tr>`;
+  }
+
+  // ── Bookings table ────────────────────────────────────────────────────────
+  function renderBookings() {
+    const bookings = lsGet(LS.bookings);
+
+    document.getElementById("bookings-table").innerHTML = bookings.length
+      ? bookings.map(b => `<tr>
+          <td class="td-name"><strong>${b.userName || "Guest"}</strong><span>${b.userEmail || "—"}</span></td>
+          <td>${b.proName}</td>
+          <td>${b.service}</td>
+          <td><strong>$${b.amount}</strong>${b.tip ? ` <span style="color:var(--text-muted);font-size:0.78rem;">+$${b.tip} tip</span>` : ""}</td>
+          <td>${b.paymentMethod}</td>
+          <td class="td-mono">${fmtDateTime(b.createdAt)}</td>
+        </tr>`).join("")
+      : `<tr><td colspan="6"><div class="empty-state">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>No bookings recorded yet</p>
+          </div></td></tr>`;
+  }
+
+  // ── Drawers ───────────────────────────────────────────────────────────────
+  function openDrawer(title, sub, bodyHtml, actionsHtml) {
+    document.getElementById("drawer-title").textContent = title;
+    document.getElementById("drawer-sub").textContent   = sub;
+    document.getElementById("drawer-body").innerHTML    = bodyHtml;
+    document.getElementById("drawer-actions").innerHTML = actionsHtml;
+    document.getElementById("drawer").classList.add("open");
+    document.getElementById("drawer-overlay").classList.add("open");
+  }
+
+  function closeDrawer() {
+    document.getElementById("drawer").classList.remove("open");
+    document.getElementById("drawer-overlay").classList.remove("open");
+  }
+
+  function viewUser(id) {
+    const u = lsGet(LS.users).find(x => x.id === id);
+    if (!u) return;
+    openDrawer(
+      u.name || "User",
+      `${capitalize(u.type)} · ${fmtDateTime(u.createdAt)}`,
+      `<div class="detail-section">
+        <p class="detail-label">Account information</p>
+        <div class="detail-row">
+          <div class="detail-item"><span class="label">Name</span><span class="value">${u.name || "—"}</span></div>
+          <div class="detail-item"><span class="label">Type</span><span class="value">${capitalize(u.type)}</span></div>
+          <div class="detail-item"><span class="label">Email</span><span class="value">${u.email || "—"}</span></div>
+          <div class="detail-item"><span class="label">Phone</span><span class="value">${u.phone || "—"}</span></div>
+          <div class="detail-item"><span class="label">Status</span><span class="value">${capitalize(u.status)}</span></div>
+          <div class="detail-item"><span class="label">Joined</span><span class="value">${fmtDateTime(u.createdAt)}</span></div>
+        </div>
+      </div>`,
+      `${u.status !== "approved" ? `<button class="btn btn-approve" data-action="approve-user" data-id="${u.id}" type="button">Approve</button>` : ""}
+       ${u.status !== "rejected" ? `<button class="btn btn-reject"  data-action="reject-user"  data-id="${u.id}" type="button">Reject</button>`  : ""}
+       <button class="btn btn-ghost" id="drawer-close-alt" type="button">Close</button>`
+    );
+  }
+
+  function viewPartner(id) {
+    const p = lsGet(LS.partners).find(x => x.id === id);
+    if (!p) return;
+    openDrawer(
+      p.name,
+      `${p.business} · ${capitalize(p.trade)} · Applied ${fmtDate(p.createdAt)}`,
+      `<div class="detail-section">
+        <p class="detail-label">Contact</p>
+        <div class="detail-row">
+          <div class="detail-item"><span class="label">Full name</span><span class="value">${p.name}</span></div>
+          <div class="detail-item"><span class="label">Business</span><span class="value">${p.business}</span></div>
+          <div class="detail-item"><span class="label">Email</span><span class="value">${p.email || "—"}</span></div>
+          <div class="detail-item"><span class="label">Phone</span><span class="value">${p.phone || "—"}</span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <p class="detail-label">Trade details</p>
+        <div class="detail-row">
+          <div class="detail-item"><span class="label">Trade</span><span class="value">${capitalize(p.trade)}</span></div>
+          <div class="detail-item"><span class="label">Experience</span><span class="value">${p.experience ? p.experience + " years" : "—"}</span></div>
+          <div class="detail-item full"><span class="label">Service area</span><span class="value">${p.area || "—"}</span></div>
+          <div class="detail-item full"><span class="label">License / Insurance</span><span class="value">${p.license || "Not provided"}</span></div>
+        </div>
+      </div>
+      ${p.notes ? `<div class="detail-section"><p class="detail-label">Notes</p><div class="notes-block">${p.notes}</div></div>` : ""}
+      <div class="detail-section">
+        <p class="detail-label">Application status</p>
+        <div class="detail-row">
+          <div class="detail-item"><span class="label">Status</span><span class="value">${capitalize(p.status)}</span></div>
+          <div class="detail-item"><span class="label">Applied</span><span class="value">${fmtDateTime(p.createdAt)}</span></div>
+        </div>
+      </div>`,
+      `${p.status !== "approved" ? `<button class="btn btn-approve" data-action="approve-partner" data-id="${p.id}" type="button">Approve partner</button>` : `<span style="color:var(--green);font-size:0.85rem;font-weight:600;">✓ Approved</span>`}
+       ${p.status !== "rejected" ? `<button class="btn btn-reject"  data-action="reject-partner"  data-id="${p.id}" type="button">Reject</button>`  : ""}
+       <button class="btn btn-ghost" id="drawer-close-alt" type="button">Close</button>`
+    );
+  }
+
+  // ── Actions ───────────────────────────────────────────────────────────────
+  function approveUser(id) {
+    const users = lsGet(LS.users);
+    const u = users.find(x => x.id === id);
+    if (!u) return;
+    u.status = "approved";
+    lsSet(LS.users, users);
+    toast(`${u.name || "User"} approved`);
+    closeDrawer();
+    renderAll();
+  }
+
+  function rejectUser(id) {
+    const users = lsGet(LS.users);
+    const u = users.find(x => x.id === id);
+    if (!u) return;
+    u.status = "rejected";
+    lsSet(LS.users, users);
+    toast(`${u.name || "User"} rejected`, "red");
+    closeDrawer();
+    renderAll();
+  }
+
+  function approvePartner(id) {
+    const partners = lsGet(LS.partners);
+    const p = partners.find(x => x.id === id);
+    if (!p) return;
+    p.status = "approved";
+    lsSet(LS.partners, partners);
+    toast(`${p.name} approved as a partner`);
+    closeDrawer();
+    renderAll();
+  }
+
+  function rejectPartner(id) {
+    const partners = lsGet(LS.partners);
+    const p = partners.find(x => x.id === id);
+    if (!p) return;
+    p.status = "rejected";
+    lsSet(LS.partners, partners);
+    toast(`${p.name} rejected`, "red");
+    closeDrawer();
+    renderAll();
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  const viewMeta = {
+    dashboard: { title: "Dashboard",      sub: "Overview of all activity" },
+    users:     { title: "Users",          sub: "All registered and guest users" },
+    partners:  { title: "Partners",       sub: "Service professional applications" },
+    bookings:  { title: "Bookings",       sub: "All completed payment transactions" },
+  };
+
+  function switchView(view) {
+    document.querySelectorAll(".content").forEach(el => el.classList.remove("active"));
+    document.getElementById(`view-${view}`).classList.add("active");
+    document.querySelectorAll(".nav-item[data-view]").forEach(el => el.classList.toggle("active", el.dataset.view === view));
+    document.getElementById("view-title").textContent = viewMeta[view].title;
+    document.getElementById("view-sub").textContent   = viewMeta[view].sub;
+  }
+
+  // ── Render all ────────────────────────────────────────────────────────────
+  function renderAll() {
+    renderStats();
+    renderDashboard();
+    renderUsers();
+    renderPartners();
+    renderBookings();
+    document.getElementById("refresh-time").textContent = `Last updated ${new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  }
+
+  // ── Event delegation ──────────────────────────────────────────────────────
+  document.body.addEventListener("click", (e) => {
+    const action = e.target.dataset.action;
+    const id     = Number(e.target.dataset.id);
+
+    if (action === "approve-user")    approveUser(id);
+    if (action === "reject-user")     rejectUser(id);
+    if (action === "approve-partner") approvePartner(id);
+    if (action === "reject-partner")  rejectPartner(id);
+    if (action === "view-user")       viewUser(id);
+    if (action === "view-partner")    viewPartner(id);
+
+    const navItem = e.target.closest(".nav-item[data-view]");
+    if (navItem) switchView(navItem.dataset.view);
+
+    const filterBtn = e.target.closest(".filter-btn");
+    if (filterBtn) {
+      const parent = filterBtn.closest(".table-filter");
+      parent.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      filterBtn.classList.add("active");
+      if (parent.id === "user-filter")    { userFilter    = filterBtn.dataset.filter; renderUsers(); }
+      if (parent.id === "partner-filter") { partnerFilter = filterBtn.dataset.filter; renderPartners(); }
+    }
+
+    if (e.target.id === "drawer-close" || e.target.id === "drawer-close-alt") closeDrawer();
+    if (e.target.id === "drawer-overlay") closeDrawer();
+
+    if (e.target.id === "refresh-btn") renderAll();
+
+    if (e.target.id === "clear-btn") {
+      if (confirm("Clear all stored data? This cannot be undone.")) {
+        localStorage.removeItem(LS.users);
+        localStorage.removeItem(LS.partners);
+        localStorage.removeItem(LS.bookings);
+        seedDemoData();
+        renderAll();
+        toast("All data cleared and demo data restored");
+      }
+    }
+  });
+
+  document.getElementById("drawer-overlay").addEventListener("click", closeDrawer);
+
+  // ── Passcode gate ─────────────────────────────────────────────────────────
+  const PASSCODE    = "18051805";
+  const SESSION_KEY = "fn_admin_auth";
+
+  function unlockDashboard() {
+    document.getElementById("gate").style.display  = "none";
+    document.getElementById("shell").style.display = "grid";
+    seedDemoData();
+    renderAll();
+  }
+
+  function submitGate() {
+    const val = document.getElementById("gate-input").value;
+    if (val === PASSCODE) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      unlockDashboard();
+    } else {
+      const card  = document.getElementById("gate-card");
+      const error = document.getElementById("gate-error");
+      const input = document.getElementById("gate-input");
+      error.classList.add("visible");
+      input.value = "";
+      input.focus();
+      card.classList.remove("gate-shake");
+      void card.offsetWidth; // force reflow to restart animation
+      card.classList.add("gate-shake");
+    }
+  }
+
+  document.getElementById("gate-btn").addEventListener("click", submitGate);
+
+  document.getElementById("gate-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitGate();
+    document.getElementById("gate-error").classList.remove("visible");
+  });
+
+  // Show / hide passcode characters
+  document.getElementById("gate-toggle").addEventListener("click", () => {
+    const input = document.getElementById("gate-input");
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    document.getElementById("eye-icon").innerHTML = isHidden
+      ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+      : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  });
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  if (sessionStorage.getItem(SESSION_KEY) === "1") {
+    unlockDashboard();
+  }
+</script>
+</body>
+</html>
