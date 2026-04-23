@@ -297,7 +297,6 @@ const state = {
   flowStep: 0,
   flowCompleted: false,
   authStep: 2,
-  activeSheetTab: "booking",
   hasBooking: false,
   paymentCompleted: false,
   partnerApplicationSubmitted: false,
@@ -329,7 +328,6 @@ const state = {
   trackingStage: 0,
 };
 
-const sheetTabOrder = ["booking", "payment", "tracking", "profile"];
 
 const statusSteps = [
   "Booked",
@@ -397,11 +395,8 @@ const userLocationMarker = document.getElementById("user-location-marker");
 const vanMarker = document.getElementById("van-marker");
 const routeLine = document.querySelector(".route-line");
 const locationPill = document.getElementById("location-pill");
-const sheetTabs = document.getElementById("sheet-tabs");
-const sheetPageEyebrow = document.getElementById("sheet-page-eyebrow");
-const sheetPageTitle = document.getElementById("sheet-page-title");
-const sheetPageCopy = document.getElementById("sheet-page-copy");
-const sheetBackButton = document.getElementById("sheet-back-button");
+const bookingFooterPro = document.getElementById("booking-footer-pro");
+const mapBookProName = document.getElementById("map-book-pro-name");
 const flowShell = document.getElementById("flow-shell");
 const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
@@ -540,35 +535,12 @@ function getPaymentMethodLabel(method) {
   return labels[method] ?? method;
 }
 
-function getSheetTabLabel(tab) {
-  const labels = {
-    booking: "Booking",
-    payment: "Payment",
-    tracking: "Live tracker",
-    profile: "Profile",
-  };
-  return labels[tab] ?? tab;
-}
-
-function isSheetTabAvailable(tab) {
-  if (tab === "booking") return true;
-  if (tab === "payment") return state.hasBooking;
-  if (tab === "tracking") return state.paymentCompleted;
-  if (tab === "profile") return true;
-  return false;
-}
-
-function getPreviousSheetTab() {
-  if (state.activeSheetTab === "profile") return null;
-  const currentIndex = sheetTabOrder.indexOf(state.activeSheetTab);
-  for (let index = currentIndex - 1; index >= 0; index -= 1) {
-    const candidate = sheetTabOrder[index];
-    if (candidate === "profile") continue;
-    if (isSheetTabAvailable(candidate)) {
-      return candidate;
-    }
-  }
-  return null;
+function showPage(pageId) {
+  document.querySelectorAll(".app-page").forEach((page) => {
+    page.classList.remove("page-active");
+  });
+  const target = document.getElementById(pageId);
+  if (target) target.classList.add("page-active");
 }
 
 function getBookButtonLabel(profileId) {
@@ -618,57 +590,6 @@ function renderFlow() {
   });
 }
 
-function renderSheetTabs() {
-  [...sheetTabs.querySelectorAll("[data-sheet-tab]")].forEach((button) => {
-    const available = isSheetTabAvailable(button.dataset.sheetTab);
-    const active = button.dataset.sheetTab === state.activeSheetTab;
-    button.disabled = !available;
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-disabled", available ? "false" : "true");
-    button.setAttribute("aria-selected", active ? "true" : "false");
-  });
-
-  [...document.querySelectorAll("[data-sheet-panel]")].forEach((panel) => {
-    panel.classList.toggle("active", panel.dataset.sheetPanel === state.activeSheetTab);
-  });
-
-  renderSheetHeader();
-}
-
-function renderSheetHeader() {
-  const pro = getSelectedProfessional();
-  const content = {
-    booking: {
-      eyebrow: "Booking details",
-      title: "Choose your pro, then continue to payment.",
-      copy: "Booking is its own page now. After you book, checkout opens immediately, then live tracking unlocks after payment.",
-    },
-    payment: {
-      eyebrow: "Payment",
-      title: `Confirm payment to dispatch ${pro.name}.`,
-      copy: "This checkout happens before live tracking. Once payment clears, the live map, distance, and ETA tracker open automatically.",
-    },
-    tracking: {
-      eyebrow: "Live tracker",
-      title: `Track ${pro.name} like a live ride.`,
-      copy: "See the route between you and your technician, how far away they are, and the current ETA from the map above.",
-    },
-    profile: {
-      eyebrow: "Account",
-      title: "Your profile and saved payment.",
-      copy: "Update your name, email, and phone number, or manage your saved card for faster checkout.",
-    },
-  }[state.activeSheetTab];
-
-  const previousTab = getPreviousSheetTab();
-
-  sheetPageEyebrow.textContent = content.eyebrow;
-  sheetPageTitle.textContent = content.title;
-  sheetPageCopy.textContent = content.copy;
-  sheetBackButton.hidden = !previousTab;
-  sheetBackButton.disabled = !previousTab;
-  sheetBackButton.textContent = previousTab ? `Back to ${getSheetTabLabel(previousTab)}` : "Previous tab";
-}
 
 function renderPartnerState() {
   partnerSuccess.classList.toggle("hidden-panel", !state.partnerApplicationSubmitted);
@@ -724,6 +645,8 @@ function renderMapDetail() {
   mapDetailPrice.textContent = pro.price;
   mapDetailExperience.textContent = pro.experience;
   mapDetailBook.textContent = getBookButtonLabel(pro.id);
+  if (bookingFooterPro) bookingFooterPro.textContent = pro.name;
+  if (mapBookProName) mapBookProName.textContent = pro.name;
 }
 
 function renderCategories() {
@@ -940,26 +863,72 @@ function renderNotifications() {
     .join("");
 }
 
+// ── MapLibre real markers ─────────────────────────────────────────────────
+let _mapReady = false;
+let _mapUserMarker = null;
+const _mapProMarkers = new Map(); // proId → { marker, el }
+
+function _createUserMarkerEl() {
+  const el = document.createElement("div");
+  el.className = "user-location-marker";
+  el.setAttribute("aria-label", "Your current location");
+  el.innerHTML = "<span>You</span>";
+  return el;
+}
+
+function _createProMarkerEl(pro) {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "map-pin";
+  el.setAttribute("data-profile", pro.id);
+  el.innerHTML = `<span>${services[pro.category].icon}</span><div class="pin-label">${pro.name.split(" ")[0]}</div>`;
+  el.addEventListener("click", () => selectProfessional(pro.id));
+  return el;
+}
+
 function renderMapPins() {
-  mapPins.innerHTML = professionals
-    .map((pro) => {
-      const active = pro.id === state.selectedProfessionalId ? "active" : "";
-      const projected = projectLocationToMap(getProfessionalLocation(pro).latitude, getProfessionalLocation(pro).longitude);
-      return `
-        <button class="map-pin ${active}" data-profile="${pro.id}" type="button" style="left:${projected.x}; top:${projected.y}; transform: translate(-50%, -50%);">
-          <span>${services[pro.category].icon}</span>
-          <div class="pin-label">${pro.name.split(" ")[0]}</div>
-        </button>
-      `;
-    })
-    .join("");
+  if (!_mapReady) return; // will be called again after map loads
+  const proLoc = professionals.map((pro) => ({
+    pro,
+    loc: getProfessionalLocation(pro),
+  }));
+
+  // Remove markers for pros no longer needed (shouldn't happen but guard anyway)
+  for (const [id, { marker }] of _mapProMarkers) {
+    if (!professionals.find((p) => p.id === id)) {
+      marker.remove();
+      _mapProMarkers.delete(id);
+    }
+  }
+
+  proLoc.forEach(({ pro, loc }) => {
+    const active = pro.id === state.selectedProfessionalId;
+    if (_mapProMarkers.has(pro.id)) {
+      const { marker, el } = _mapProMarkers.get(pro.id);
+      el.className = `map-pin${active ? " active" : ""}`;
+      marker.setLngLat([loc.longitude, loc.latitude]);
+    } else {
+      const el = _createProMarkerEl(pro);
+      el.className = `map-pin${active ? " active" : ""}`;
+      const marker = new maplibregl.Marker({ element: el, anchor: "center" })
+        .setLngLat([loc.longitude, loc.latitude])
+        .addTo(liveMap);
+      _mapProMarkers.set(pro.id, { marker, el });
+    }
+  });
 }
 
 function renderUserLocationMarker() {
+  if (!_mapReady) return;
   const origin = getReferenceLocation();
-  const projected = projectLocationToMap(origin.latitude, origin.longitude);
-  userLocationMarker.style.left = projected.x;
-  userLocationMarker.style.top = projected.y;
+  if (_mapUserMarker) {
+    _mapUserMarker.setLngLat([origin.longitude, origin.latitude]);
+  } else {
+    const el = _createUserMarkerEl();
+    _mapUserMarker = new maplibregl.Marker({ element: el, anchor: "center" })
+      .setLngLat([origin.longitude, origin.latitude])
+      .addTo(liveMap);
+  }
 }
 
 function updateEstimate() {
@@ -994,11 +963,10 @@ function syncSearchToIssue() {
   }
 }
 
-function resetCheckoutProgress(nextTab = "booking") {
+function resetCheckoutProgress() {
   window.clearInterval(trackingTimer);
   state.hasBooking = false;
   state.paymentCompleted = false;
-  state.activeSheetTab = nextTab;
   state.trackingStage = 0;
   reviewPanel.classList.add("hidden-panel");
 }
@@ -1058,12 +1026,12 @@ function bookProfessional(profileId) {
   if (!pro) return;
 
   if (state.paymentCompleted && state.selectedProfessionalId === profileId) {
-    setSheetTab("tracking");
+    showPage("page-tracking");
     return;
   }
 
   if (state.hasBooking && !state.paymentCompleted && state.selectedProfessionalId === profileId) {
-    setSheetTab("payment");
+    showPage("page-payment");
     return;
   }
 
@@ -1074,7 +1042,6 @@ function bookProfessional(profileId) {
   state.trackingStage = 0;
   state.hasBooking = true;
   state.paymentCompleted = false;
-  state.activeSheetTab = "payment";
   reviewPanel.classList.add("hidden-panel");
 
   state.notifications.unshift({
@@ -1085,6 +1052,7 @@ function bookProfessional(profileId) {
   state.chat = [{ author: "pro", text: "I'm ready to head out as soon as payment is confirmed." }];
 
   renderAll();
+  showPage("page-payment");
 }
 
 function formatCardNumber(raw) {
@@ -1177,7 +1145,6 @@ function renderProfile() {
 
 function renderAll() {
   renderFlow();
-  renderSheetTabs();
   renderPartnerState();
   renderFlowServices();
   renderLocationLayer();
@@ -1251,12 +1218,12 @@ function startTrackingDemo() {
 
 function submitPayment() {
   if (!state.hasBooking) {
-    setSheetTab("booking");
+    showPage("page-booking");
     return;
   }
 
   if (state.paymentCompleted) {
-    setSheetTab("tracking");
+    showPage("page-tracking");
     return;
   }
 
@@ -1295,7 +1262,6 @@ function submitPayment() {
   });
 
   state.paymentCompleted = true;
-  state.activeSheetTab = "tracking";
   state.trackingStage = 1;
   state.chat.push({ author: "pro", text: "Payment confirmed. I'm on the way now." });
 
@@ -1305,6 +1271,7 @@ function submitPayment() {
   });
 
   renderAll();
+  showPage("page-tracking");
   startTrackingDemo();
 }
 
@@ -1390,6 +1357,7 @@ function detectLocation() {
     state.userLocation = { latitude, longitude, accuracy, label, source };
     state.currentLocationText = label;
     locationPill.textContent = label;
+    flyMapToUser(latitude, longitude);
     const nearest = getFilteredProfessionals()[0];
     if (nearest && !state.hasBooking && !state.paymentCompleted) {
       state.selectedProfessionalId = nearest.id;
@@ -1398,17 +1366,41 @@ function detectLocation() {
     renderAll();
   }
 
+  async function reverseGeocode(latitude, longitude, accuracy) {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14&addressdetails=1`;
+      const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+      if (!res.ok) throw new Error("geocode failed");
+      const data = await res.json();
+      const a = data.address || {};
+      const neighbourhood = a.neighbourhood || a.suburb || a.quarter || a.village || a.hamlet || "";
+      const city = a.city || a.town || a.county || a.state_district || a.state || "";
+      const label = neighbourhood && city ? `${neighbourhood}, ${city}` : city || data.display_name.split(",")[0];
+      applyLocation(latitude, longitude, accuracy, label, "device");
+    } catch {
+      const label = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+      applyLocation(latitude, longitude, accuracy, label, "device");
+    }
+  }
+
+  function flyMapToUser(latitude, longitude) {
+    if (typeof liveMap !== "undefined" && _mapReady) {
+      liveMap.flyTo({ center: [longitude, latitude], zoom: 14, essential: true, duration: 1400 });
+    }
+  }
+
   if (!("geolocation" in navigator)) {
     applyLocation(defaultLocation.latitude, defaultLocation.longitude, null, defaultLocation.label, "fallback");
     return;
   }
 
+  locationPill.textContent = "Detecting location…";
+
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
       const accuracy = Math.round(position.coords.accuracy);
-      const label = `${latitude.toFixed(4)}, ${longitude.toFixed(4)} (+/-${accuracy}m)`;
-      applyLocation(latitude, longitude, accuracy, label, "device");
+      reverseGeocode(latitude, longitude, accuracy);
     },
     () => {
       applyLocation(defaultLocation.latitude, defaultLocation.longitude, null, defaultLocation.label, "fallback");
@@ -1574,17 +1566,9 @@ function showLocationStep() {
   renderLocationLayer();
 }
 
-function setSheetTab(tab) {
-  if (!isSheetTabAvailable(tab)) {
-    return;
-  }
-  state.activeSheetTab = tab;
-  renderSheetTabs();
-}
-
 function openLiveMap() {
   completeFlow();
-  document.querySelector(".map-stage").scrollIntoView({ behavior: "smooth", block: "start" });
+  showPage("page-map");
 }
 
 nearbyPreview.addEventListener("click", (event) => {
@@ -1622,7 +1606,10 @@ servicesBackButton.addEventListener("click", goBackToAuth);
 servicesContinueButton.addEventListener("click", showLocationStep);
 refreshLocationButton.addEventListener("click", detectLocation);
 enterAppButton.addEventListener("click", openLiveMap);
-mapDetailBook.addEventListener("click", () => bookProfessional(state.selectedProfessionalId));
+mapDetailBook.addEventListener("click", () => {
+  selectProfessional(state.selectedProfessionalId);
+  showPage("page-booking");
+});
 
 [...document.querySelectorAll("[data-flow-back]")].forEach((button) => {
   button.addEventListener("click", () => setFlowStep(Number(button.dataset.flowBack)));
@@ -1653,17 +1640,13 @@ paymentMethods.addEventListener("click", (event) => {
   setPaymentMethod(button.dataset.payment);
 });
 
-sheetTabs.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-sheet-tab]");
-  if (!button) return;
-  setSheetTab(button.dataset.sheetTab);
+document.getElementById("go-to-booking").addEventListener("click", () => showPage("page-booking"));
+document.getElementById("back-to-map").addEventListener("click", () => showPage("page-map"));
+document.getElementById("go-to-payment").addEventListener("click", () => {
+  bookProfessional(state.selectedProfessionalId);
+  if (state.hasBooking) showPage("page-payment");
 });
-
-sheetBackButton.addEventListener("click", () => {
-  const previousTab = getPreviousSheetTab();
-  if (!previousTab) return;
-  setSheetTab(previousTab);
-});
+document.getElementById("back-to-booking").addEventListener("click", () => showPage("page-booking"));
 
 tipRow.addEventListener("click", (event) => {
   const button = event.target.closest("[data-tip]");
@@ -1815,4 +1798,19 @@ const liveMap = new maplibregl.Map({
   zoom: 13,
   attributionControl: false,
 });
+
+liveMap.on("load", () => {
+  _mapReady = true;
+  // Hide the old CSS overlay markers — real MapLibre markers take over
+  userLocationMarker.style.display = "none";
+  mapPins.style.display = "none";
+  renderUserLocationMarker();
+  renderMapPins();
+  // If geolocation resolved before the map finished loading, fly now
+  const loc = state.userLocation;
+  if (loc && loc.source !== "fallback") {
+    liveMap.flyTo({ center: [loc.longitude, loc.latitude], zoom: 14, essential: true, duration: 1400 });
+  }
+});
+
 detectLocation();
